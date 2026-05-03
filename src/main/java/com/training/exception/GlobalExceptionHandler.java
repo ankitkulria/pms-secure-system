@@ -33,6 +33,11 @@ public class GlobalExceptionHandler {
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+
+    @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
+    public ResponseEntity<String> handleBadCredentials() {
+        return ResponseEntity.status(401).body("Invalid email or password");
+    }
 //    Generic Exception
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception ex)
