@@ -4,6 +4,7 @@ package com.training.service;
 import com.training.dto.UserDTO;
 import com.training.dto.UserResponseDTO;
 import com.training.entity.User;
+import com.training.exception.DuplicateResourceException;
 import com.training.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -23,6 +24,9 @@ public class UserService implements UserDetailsService {
 
     public UserResponseDTO createUser(UserDTO dto)
     {
+        if (repository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new DuplicateResourceException("Email already exists");
+        }
         User user=modelMapper.map(dto,User.class);
 
 //        Default role

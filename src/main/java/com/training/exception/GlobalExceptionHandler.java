@@ -34,9 +34,18 @@ public class GlobalExceptionHandler {
     }
 
 
+//    Already Registered
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<String> handleDuplicateResource(DuplicateResourceException ex)
+    {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
+//    Wrong Credentials
     @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
     public ResponseEntity<String> handleBadCredentials() {
-        return ResponseEntity.status(401).body("Invalid email or password");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid email or password");
     }
 //    Generic Exception
     @ExceptionHandler(Exception.class)
