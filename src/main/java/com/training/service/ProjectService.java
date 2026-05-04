@@ -12,6 +12,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
@@ -37,5 +40,21 @@ public class ProjectService {
         Project savedProject=projectRepository.save(project);
 
         return modelMapper.map(savedProject,ProjectResponseDTO.class);
+    }
+
+    public List<ProjectResponseDTO> getUserProjects()
+    {
+        String email=SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user=userRepository.findByEmail(email)
+                .orElseThrow(()->new ResourceNotFoundException("USER NOT FOUND"));
+
+        List<Project> projects=projectRepository.findByUserId(user.getId());
+
+        return projects.stream()
+                .map(project -> modelMapper.map(project,ProjectResponseDTO.class))
+                .collect(Collectors.toList());
     }
 }
