@@ -8,11 +8,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.training.exception.InvalidCredentialsException;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,12 +28,21 @@ public class AuthController {
     public ResponseEntity<String> login(@RequestBody LoginRequest request,
                                         HttpServletResponse response)
     {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+        try {
+
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+
+        } catch (RuntimeException e) {
+
+            throw new InvalidCredentialsException(
+                    "Invalid email or password"
+            );
+        }
         String accessToken=jwtUtil.generateToken(request.getEmail());
         String refreshToken= jwtUtil.generateRefreshToken(request.getEmail());
 

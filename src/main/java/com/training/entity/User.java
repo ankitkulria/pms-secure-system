@@ -30,6 +30,9 @@ public class User implements UserDetails {
 
     private String role;
 
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Project> projects;
+
 
 
     @Override

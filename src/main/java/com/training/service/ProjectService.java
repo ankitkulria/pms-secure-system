@@ -5,6 +5,7 @@ import com.training.dto.ProjectResponseDTO;
 import com.training.entity.Project;
 import com.training.entity.User;
 import com.training.exception.ResourceNotFoundException;
+import com.training.exception.UnAuthorizedException;
 import com.training.repository.ProjectRepository;
 import com.training.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,5 +57,20 @@ public class ProjectService {
         return projects.stream()
                 .map(project -> modelMapper.map(project,ProjectResponseDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    public void deleteProject(Long projectId)
+    {
+        String email=SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+        Project project=projectRepository.findById(projectId)
+                .orElseThrow(()->new ResourceNotFoundException("Project Not Found"));
+
+        if(!project.getUser().getEmail().equals(email))
+        {
+            throw new UnAuthorizedException("You don't have authority to delete this project");
+        }
+        projectRepository.delete(project);
     }
 }

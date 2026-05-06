@@ -47,10 +47,27 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("Invalid email or password");
     }
+//not registered
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<String> handleInvalidCredentials(
+            InvalidCredentialsException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ex.getMessage());
+    }
+
+
+//      UnAuthorized Access
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ResponseEntity<String> handleUnauthorized(UnAuthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
 //    Generic Exception
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception ex)
     {
+        ex.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ugghhh ohh something is wrong");
     }
 }
